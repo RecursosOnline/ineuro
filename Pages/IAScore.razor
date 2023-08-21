@@ -1,0 +1,504 @@
+﻿@page "/"
+
+@inject NotificationService NotificationService
+<RadzenSteps ShowStepsButtons="false" Visible="@(ExibindoPaginaInicial)">
+    <Steps>
+        <RadzenStepsItem Text="Paciente">
+            <RadzenRow>
+                <RadzenColumn>
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Paciente</RadzenText>
+                    <RadzenTextBox Placeholder="Paciente..." class="w-100" @bind-Value=@Paciente />
+                </RadzenColumn>
+                <RadzenColumn Size="3">
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Idade</RadzenText>
+                    <RadzenNumeric Min=0 Placeholder="Idade" @bind-Value=@Idade />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenTabs>
+                <Tabs>
+                    <RadzenTabsItem Text="Fatores de Risco">
+                        <RadzenDataGrid @ref="gridFatoresDeRisco" AllowRowSelectOnRowClick="true" Data="@FatoresDeRisco!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@FatoresDeRisco.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(FatoresDeRisco.ValoresSelecionados != null && FatoresDeRisco.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Sintomas">
+                        <RadzenDataGrid @ref="gridSintomas" AllowRowSelectOnRowClick="true" Data="@SintomasPaciente!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@SintomasPaciente.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(SintomasPaciente.ValoresSelecionados != null && SintomasPaciente.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                        <RadzenLabel Text="Outros" style="margin-left: 5px; font-weight:100" />
+                        <RadzenDataGrid @ref="gridOutrosSintomas" AllowRowSelectOnRowClick="true" Data="@OutrosSintomasPaciente!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@OutrosSintomasPaciente.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(OutrosSintomasPaciente.ValoresSelecionados != null && OutrosSintomasPaciente.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Expectativa de vida/Comorbidades">
+                        <RadzenDataGrid @ref="gridExpectativaDeVida" AllowRowSelectOnRowClick="true" Data="@ExpectativaDeVida!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@ExpectativaDeVida.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(ExpectativaDeVida.ValoresSelecionados != null && ExpectativaDeVida.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+
+                        <RadzenDataGrid @ref="gridComorbidades" AllowRowSelectOnRowClick="true" Data="@Comorbidades!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@Comorbidades.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(Comorbidades.ValoresSelecionados != null && Comorbidades.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </RadzenStepsItem>
+        <RadzenStepsItem Text="Aneurisma">
+            <RadzenTabs>
+                <Tabs>
+                    <RadzenTabsItem Text="Local">
+                        <RadzenDataGrid @ref="gridLocalAneurisma" AllowRowSelectOnRowClick="true" Data="@AneurismaLocal!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@AneurismaLocal.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(AneurismaLocal.ValoresSelecionados != null && AneurismaLocal.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Diametro">
+                        <RadzenDataGrid @ref="gridAneurismaDiametroMaximo" AllowRowSelectOnRowClick="true" Data="@AneurismaDiametroMaximo!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@AneurismaDiametroMaximo.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(AneurismaDiametroMaximo.ValoresSelecionados != null && AneurismaDiametroMaximo.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Morfologia">
+                        <RadzenDataGrid @ref="gridAneurismaMorfologia" AllowRowSelectOnRowClick="true" Data="@AneurismaMorfologia!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@AneurismaMorfologia.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(AneurismaMorfologia.ValoresSelecionados != null && AneurismaMorfologia.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Outros">
+                        <RadzenDataGrid @ref="gridAneurismaOutros" AllowRowSelectOnRowClick="true" Data="@AneurismaOutros!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@AneurismaOutros.ValoresSelecionados>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                                    <Template Context="data">
+                                        <RadzenCheckBox TriState="false" Value="@(AneurismaOutros.ValoresSelecionados != null && AneurismaOutros.ValoresSelecionados.Contains(data))"
+                                                        TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </RadzenStepsItem>
+        <RadzenStepsItem Text="Tratamentos">
+            <RadzenDataGrid @ref="gridTratamento" AllowRowSelectOnRowClick="true" Data="@Tratamento!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@Tratamento.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor" Property="Text" />
+                    <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(Tratamento.ValoresSelecionados != null && Tratamento.ValoresSelecionados.Contains(data))"
+                                            TValue="bool" Change=@(args => { /*grid.SelectRow(data);*/ }) />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.NoWrap">
+                <RadzenButton Click=@(args => OnClick("Extra Small button with text and icon")) Text="Calcular" Icon="fact_check" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Large" />
+            </RadzenStack>
+        </RadzenStepsItem>
+    </Steps>
+</RadzenSteps>
+<RadzenStack Visible="@(!ExibindoPaginaInicial)">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+        <RadzenButton Variant="Variant.Text" Shade="Shade.Lighter" Click=@(args => OnResetClick()) Text="Editar" ButtonStyle="ButtonStyle.Primary" />
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal">
+        <RadzenText TextStyle="TextStyle.Body1"><strong>Paciente:</strong> </RadzenText>
+        <RadzenText>@Paciente</RadzenText>
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal">
+        <RadzenText TextStyle="TextStyle.Body1"><strong>Idade:</strong> </RadzenText>
+        <RadzenText>@Idade</RadzenText>
+    </RadzenStack>
+    <RadzenDataGrid @ref="gridFatoresDeRisco" Density="Density.Default" Data="@FatoresDeRisco!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(FatoresDeRisco.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(FatoresDeRisco.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridSintomas" Density="Density.Default" Data="@SintomasPaciente!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(SintomasPaciente.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(SintomasPaciente.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridOutrosSintomas" Density="Density.Default" Data="@OutrosSintomasPaciente!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(OutrosSintomasPaciente.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(OutrosSintomasPaciente.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridExpectativaDeVida" Density="Density.Default" Data="@ExpectativaDeVida!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(ExpectativaDeVida.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(ExpectativaDeVida.Titulo)</HeaderTemplate>
+
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridComorbidades" Density="Density.Default" Data="@Comorbidades!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(Comorbidades.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(Comorbidades.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridLocalAneurisma" Density="Density.Default" Data="@AneurismaLocal!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaLocal.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(AneurismaLocal.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridAneurismaDiametroMaximo" Density="Density.Default" Data="@AneurismaDiametroMaximo!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaDiametroMaximo.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(AneurismaDiametroMaximo.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridAneurismaMorfologia" Density="Density.Default" Data="@AneurismaMorfologia!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaMorfologia.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(AneurismaMorfologia.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+
+    <RadzenDataGrid @ref="gridAneurismaOutros" Density="Density.Default" Data="@AneurismaOutros!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaOutros.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(AneurismaOutros.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridTratamento" Density="Density.Default" Data="@Tratamento!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(Tratamento.ValoresSelecionados!.Count > 0)">
+        <HeaderTemplate>@(Tratamento.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+        </Columns>
+    </RadzenDataGrid>
+
+    <RadzenDataGrid @ref="gridUAIT" Data="@UIATS!.Valores" TItem="Score" GridLines="DataGridGridLines.Horizontal">
+        <HeaderTemplate>@(UIATS.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Score" Property="Text" />
+            <RadzenDataGridColumn TItem="Score" Property="Value" TextAlign="TextAlign.Left" />
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenDataGrid @ref="gridPHASES" Data="@PHASES!.Valores" TItem="Score" GridLines="DataGridGridLines.Horizontal">
+        <HeaderTemplate>@(PHASES.Titulo)</HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Score" Property="Text" />
+            <RadzenDataGridColumn TItem="Score" Property="Value" TextAlign="TextAlign.Left" />
+        </Columns>
+    </RadzenDataGrid>
+</RadzenStack>
+@code {
+    int Idade;
+    string? Paciente;
+    public record Valor(Guid Id, string Text, int Total);
+    public record Score(string Text, string Value);
+
+    public bool ExibindoPaginaInicial = true;
+    RadzenDataGrid<Valor>? gridFatoresDeRisco;
+    RadzenDataGrid<Valor>? gridSintomas;
+    RadzenDataGrid<Valor>? gridOutrosSintomas;
+    RadzenDataGrid<Valor>? gridComorbidades;
+    RadzenDataGrid<Valor>? gridLocalAneurisma;
+    RadzenDataGrid<Valor>? gridAneurismaDiametroMaximo;
+    RadzenDataGrid<Valor>? gridAneurismaMorfologia;
+    RadzenDataGrid<Valor>? gridAneurismaOutros;
+    RadzenDataGrid<Valor>? gridTratamento;
+    RadzenDataGrid<Valor>? gridExpectativaDeVida;
+    RadzenDataGrid<Score>? gridUAIT;
+    RadzenDataGrid<Score>? gridPHASES;
+
+
+    Valor? ExpectativaDeVidaSelecionado;
+
+    public record Sintomas(string Titulo)
+    {
+        public IEnumerable<Valor>? Valores;
+        public IList<Valor>? ValoresSelecionados;
+
+        public Sintomas() : this(new Sintomas())
+        {
+
+        }
+    }
+    public record Scores(string Titulo)
+    {
+        public IEnumerable<Score>? Valores;
+
+        public Scores() : this(new Scores())
+        {
+
+        }
+    }
+
+    public Sintomas? FatoresDeRisco { get; internal set; }
+    public Sintomas? SintomasPaciente { get; internal set; }
+    public Sintomas? OutrosSintomasPaciente { get; internal set; }
+    public Sintomas? Comorbidades { get; internal set; }
+    public Sintomas? ExpectativaDeVida { get; internal set; }
+    public Sintomas? AneurismaLocal { get; internal set; }
+    public Sintomas? AneurismaDiametroMaximo { get; internal set; }
+    public Sintomas? AneurismaMorfologia { get; internal set; }
+    public Sintomas? AneurismaOutros { get; internal set; }
+    public Sintomas? Tratamento { get; internal set; }
+    public Scores? UIATS { get; internal set; }
+    public Scores? PHASES { get; internal set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await LoadFatotesDeRisco();
+        await LoadSintomasPaciente();
+        await LoadComorbidade();
+        await LoadExpectativaDeVida();
+        await LoadAneurismaLocal();
+        await LoadAneurismaDiametroMaximo();
+        await LoadAneurismaMorfologia();
+        await LoadAneurismaOutros();
+        await LoadTratamento();
+
+    }
+
+    private Task LoadTratamento()
+    {
+        Tratamento = new Sintomas("Riscos relacionados à complexidade do aneurisma");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("2549068A-A8C0-4E33-8525-4919FF1591DC"), Text: "Baixo risco relacionado à complexidade do aneurisma", Total: 4));
+        valores.Add(new Valor(Id: Guid.Parse("242BA38E-F0BE-4D4D-B2E1-801ABFF4424D"), Text: "Alto risco relacionado à complexidade do aneurisma", Total: 4));
+
+        Tratamento.Valores = valores;
+        Tratamento.ValoresSelecionados = new List<Valor>();
+        return Task.CompletedTask;
+
+    }
+    private Task LoadAneurismaOutros()
+    {
+
+        AneurismaOutros = new Sintomas("Aneurisma Outros");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("51A5098E-A02B-4DED-85A1-9A5660CD7E9A"), Text: "Crescimento do aneurisma em imagens seriadas", Total: 4));
+        valores.Add(new Valor(Id: Guid.Parse("921B325D-7FC0-4F90-BD36-55D72AEED820"), Text: "Formação de aneurisma de novo em exames seriados", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("8FA509D0-C418-4C70-BF01-33ECF01A25B1"), Text: "Doença dos vasos estenooclusivos contralaterais", Total: 1));
+
+        AneurismaOutros.Valores = valores;
+        AneurismaOutros.ValoresSelecionados = new List<Valor>();
+        return Task.CompletedTask;
+    }
+    private Task LoadAneurismaMorfologia()
+    {
+
+        AneurismaMorfologia = new Sintomas("Morfologia");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("52F57D2B-4B3B-44A9-A8A1-83121B5AA672"), Text: "Irregularidade ou lobulação", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("A194D835-18E5-409F-9996-602B2CA4EA94"), Text: "Size ratio maior que 3 ou Aspect ratio maior que 1.6", Total: 1));
+        AneurismaMorfologia.Valores = valores;
+        AneurismaMorfologia.ValoresSelecionados = new List<Valor>();
+        return Task.CompletedTask;
+    }
+    private Task LoadAneurismaDiametroMaximo()
+    {
+        AneurismaDiametroMaximo = new Sintomas("Diametro Maximo");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("D199D02D-6CEE-48B2-9C5A-C992A852BE7A"), Text: "Menor que 3.9 mm", Total: 0));
+        valores.Add(new Valor(Id: Guid.Parse("3AC7A778-BF52-4459-93F5-84376B16CA02"), Text: "Entre 4.0 e 6.9 e mm", Total: 1));
+        valores.Add(new Valor(Id: Guid.Parse("553A7AE7-9B6B-4410-AE20-78C0DD930F08"), Text: "Entre 7.0 e 12.9 e mm", Total: 2));
+        valores.Add(new Valor(Id: Guid.Parse("C8FA8646-F0D1-4D16-B227-783D320A2856"), Text: "Entre 13.0 e 24.9 e mm", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("77DA841B-A852-43EE-861A-3331740195D8"), Text: "Maior que 25 mm", Total: 4));
+        AneurismaDiametroMaximo.Valores = valores;
+        AneurismaDiametroMaximo.ValoresSelecionados = new List<Valor>();
+        return Task.CompletedTask;
+    }
+    private Task LoadAneurismaLocal()
+    {
+        AneurismaLocal = new Sintomas("Local Aneurisma");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("8307004E-E0F1-4156-BF37-DF3BFC453495"), Text: "Artéria cerebral média", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("7695CEEF-DA1F-4BA8-B883-F0E3FD17333B"), Text: "Artéria comunicante anterior", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("9D4CB24D-CBDE-4BB0-B96F-48FE234FA99F"), Text: "Artéria carótida interna - outros segmentos", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("2E739B88-3E56-4C15-A370-0EC0FC2F88E0"), Text: "Carótida interna - artéria comunicante posterior", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("A87864A6-6779-4D36-96C7-4C0B022005F2"), Text: "Ponta basilar e artéria cerebelar basilar-superior", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("C6A7E602-02D6-46BA-9461-35D5A555E517"), Text: "Artéria vertebral - artéria cerebelar póstero-inferior e junção vértebro-basilar", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("95B24C47-9A99-41E5-B409-423312D8F3CD"), Text: "Outros", Total: 3));
+
+        AneurismaLocal.Valores = valores;
+        AneurismaLocal.ValoresSelecionados = new List<Valor>();
+        return Task.CompletedTask;
+    }
+    private Task LoadExpectativaDeVida()
+    {
+        ExpectativaDeVida = new Sintomas("Expectativa de vida");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("B09B0C42-2655-460C-96F4-F1A9ED356255"), Text: "Menor que 5 anos", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("9F2004B4-F77B-4946-960D-48316113EEAC"), Text: "Entre 5 anos e 10 anos", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("442F3C10-9762-4750-92C0-EB6499093FC1"), Text: "Maior que 10 anos", Total: 3));
+
+        ExpectativaDeVida.Valores = valores;
+        ExpectativaDeVida.ValoresSelecionados = new List<Valor>();
+        return Task.CompletedTask;
+    }
+    private Task LoadComorbidade()
+    {
+        Comorbidades = new Sintomas("Comorbidades");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("26C69E5D-AF6C-4928-9589-DF5922CC7A0B"), Text: "Transtornos neurocognitivos", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("67F84EEA-3ACE-4D74-896E-127158EC8B9D"), Text: "Coagulopatias, Doenças trombofílicas", Total: 2));
+        valores.Add(new Valor(Id: Guid.Parse("B29D1A17-DFFC-4ED6-BF1E-35CDA356245D"), Text: "Transtornos psiquiátricos", Total: 2));
+
+        Comorbidades.Valores = valores;
+        Comorbidades.ValoresSelecionados = new List<Valor>();
+        return Task.CompletedTask;
+    }
+    private Task LoadSintomasPaciente()
+    {
+        SintomasPaciente = new Sintomas("Sintomas clínicos relacionados à IUA");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("1AC3E40F-E471-4AF2-BE3C-8A12C156E298"), Text: "Déficit de nervos cranianos", Total: 4));
+        valores.Add(new Valor(Id: Guid.Parse("0C4FDE25-0BB7-480F-AD59-2FD87083F41E"), Text: "Efeito de massa clínico ou radiológico", Total: 4));
+        valores.Add(new Valor(Id: Guid.Parse("E457FCEE-DCF8-4C62-96E1-0021035EDA71"), Text: "Eventos tromboembólicos do aneurisma", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("0C638A7E-FAA1-4CB8-968F-0DD9CE923954"), Text: "Eplepsia", Total: 1));
+
+        SintomasPaciente.Valores = valores;
+        SintomasPaciente.ValoresSelecionados = new List<Valor>();
+        //Outros
+        OutrosSintomasPaciente = new Sintomas("Outros Sintomas");
+        valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("48303ADD-842F-4124-BD17-19C841E4C36F"), Text: "Qualidade de vida reduzida devido ao medo de ruptura", Total: 4));
+        valores.Add(new Valor(Id: Guid.Parse("4C147BAC-7267-49A3-A579-13DEF51E0A7F"), Text: "Multiplicidade de aneurismas", Total: 3));
+        // valores.Add(new Valor(Id: Guid.Parse(""), Text: "", Total: 1));
+
+        OutrosSintomasPaciente.Valores = valores;
+        OutrosSintomasPaciente.ValoresSelecionados = new List<Valor>();
+
+
+        return Task.CompletedTask;
+    }
+    private Task LoadFatotesDeRisco()
+    {
+
+        FatoresDeRisco = new Sintomas("Fatores de risco para incidência de aneurisma");
+
+        var valores = new List<Valor>();
+        valores.Add(new Valor(Id: Guid.Parse("A9449FC1-58EE-424E-B12B-BE1B8F8E2F88"), Text: "SAH anterior de um aneurisma diferente", Total: 4));
+        valores.Add(new Valor(Id: Guid.Parse("EB00D003-5B8B-471F-B661-147929C52C47"), Text: "Aneurisma intracranial ou SAH na familia", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("2772E194-83E5-4457-96F8-520E80890597"), Text: "De origem da etinia Japonesa, Finlandesa ou Inuíte", Total: 2));
+        valores.Add(new Valor(Id: Guid.Parse("EE56C83E-C96C-4159-8A3E-7168B069620D"), Text: "Fumante", Total: 3));
+        valores.Add(new Valor(Id: Guid.Parse("13787AB7-85C4-4B6A-B572-AC602FA025BD"), Text: "Hipertensão (pressão arterial sistólica >140 mmHg)", Total: 2));
+        valores.Add(new Valor(Id: Guid.Parse("2E4EF011-6C00-47C2-9922-1003F3A34CA7"), Text: "Doença renal policística autossômica dominante", Total: 2));
+        valores.Add(new Valor(Id: Guid.Parse("237225CB-FAB5-4F51-8F3A-32A5F5F002B3"), Text: "Abuso atual de drogas (cocaína, anfetamina)", Total: 2));
+        valores.Add(new Valor(Id: Guid.Parse("BD44700D-58A6-45B1-AB56-B5B9EB1255E9"), Text: "Abuso atual de álcool", Total: 1));
+        FatoresDeRisco.Valores = valores;
+        FatoresDeRisco.ValoresSelecionados = new List<Valor>();
+        return Task.CompletedTask;
+    }
+    private async void OnClick(string text)
+    {
+        //NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Button Clicked", Detail = text });
+        await CalcularScores();
+        ExibindoPaginaInicial = false;
+    }
+    private async void OnResetClick()
+    {
+        ExibindoPaginaInicial = true;
+    }
+    private Task CalcularScores()
+    {
+        var pontos_favor_reparacao = 0;
+        var pontos_gestao_conservadora = 0;
+        var recomendacao_UIATS = "Intervenção";
+        UIATS = new Scores("Escore não roto para tratamento de aneurisma intracraniano UIATS");//TODO: Verificar com a Maramelia uma tradução melhor
+        var valores = new List<Score>();
+        valores.Add(new Score(Text: "Número de pontos a favor da reparação", Value: pontos_favor_reparacao.ToString()));
+        valores.Add(new Score(Text: "Número de pontos a favor de uma gestão conservadora", Value: pontos_gestao_conservadora.ToString()));
+        valores.Add(new Score(Text: "Recomendação UIATS", Value: recomendacao_UIATS));
+        UIATS.Valores = valores;
+
+        PHASES = new Scores("PHASES");//TODO: Verificar com a Maramelia uma tradução melhor
+        valores = new List<Score>();
+        valores.Add(new Score(Text: "Score PHASES para risco de aneurisma ", Value: pontos_favor_reparacao.ToString()));
+        valores.Add(new Score(Text: "Taxa de ruptura estimada em 5 anos de acordo com Score PHASES", Value: pontos_gestao_conservadora.ToString()));
+        PHASES.Valores = valores;
+
+        return Task.CompletedTask;
+    }
+}
