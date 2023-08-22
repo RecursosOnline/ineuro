@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using ineuro.Data;
-using Radzen;
 using QuestPDF.Infrastructure;
+using Radzen;
 
 QuestPDF.Settings.License = LicenseType.Community;
 var builder = WebApplication.CreateBuilder(args);

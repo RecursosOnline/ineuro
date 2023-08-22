@@ -1,10 +1,10 @@
-﻿@page "/iascore"
+﻿@page "/"
 
 @inject NotificationService NotificationService
 <RadzenSteps ShowStepsButtons="false" Visible="@(ExibindoPaginaInicial)">
     <Steps>
         <RadzenStepsItem Text="Paciente">
-            <RadzenRow>
+            <RadzenRow Style="padding-bottom: 15px;">
                 <RadzenColumn>
                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Paciente</RadzenText>
                     <RadzenTextBox Placeholder="Paciente..." class="w-100" @bind-Value=@Paciente />
@@ -14,135 +14,146 @@
                     <RadzenNumeric Min=0 Placeholder="Idade" @bind-Value=@Idade />
                 </RadzenColumn>
             </RadzenRow>
-            <RadzenTabs>
-                <Tabs>
-                    <RadzenTabsItem Text="Fatores de Risco">
-                        <RadzenDataGrid @ref="gridFatoresDeRisco" AllowRowSelectOnRowClick="true" Data="@FatoresDeRisco!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@FatoresDeRisco.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(FatoresDeRisco.ValoresSelecionados != null && FatoresDeRisco.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-                    </RadzenTabsItem>
-                    <RadzenTabsItem Text="Sintomas">
-                        <RadzenDataGrid @ref="gridSintomas" AllowRowSelectOnRowClick="true" Data="@SintomasPaciente!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@SintomasPaciente.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(SintomasPaciente.ValoresSelecionados != null && SintomasPaciente.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-                        <RadzenLabel Text="Outros" style="margin-left: 5px; font-weight:100" />
-                        <RadzenDataGrid @ref="gridOutrosSintomas" AllowRowSelectOnRowClick="true" Data="@OutrosSintomasPaciente!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@OutrosSintomasPaciente.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(OutrosSintomasPaciente.ValoresSelecionados != null && OutrosSintomasPaciente.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-                    </RadzenTabsItem>
-                    <RadzenTabsItem Text="Expectativa de vida/Comorbidades">
-                        <RadzenDataGrid @ref="gridExpectativaDeVida" AllowRowSelectOnRowClick="true" Data="@ExpectativaDeVida!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@ExpectativaDeVida.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(ExpectativaDeVida.ValoresSelecionados != null && ExpectativaDeVida.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-
-                        <RadzenDataGrid @ref="gridComorbidades" AllowRowSelectOnRowClick="true" Data="@Comorbidades!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@Comorbidades.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(Comorbidades.ValoresSelecionados != null && Comorbidades.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
-        </RadzenStepsItem>
-        <RadzenStepsItem Text="Aneurisma">
-            <RadzenTabs>
-                <Tabs>
-                    <RadzenTabsItem Text="Local">
-                        <RadzenDataGrid @ref="gridLocalAneurisma" AllowRowSelectOnRowClick="true" Data="@AneurismaLocal!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@AneurismaLocal.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(AneurismaLocal.ValoresSelecionados != null && AneurismaLocal.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-
-                    </RadzenTabsItem>
-                    <RadzenTabsItem Text="Diametro">
-                        <RadzenDataGrid @ref="gridAneurismaDiametroMaximo" AllowRowSelectOnRowClick="true" Data="@AneurismaDiametroMaximo!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@AneurismaDiametroMaximo.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(AneurismaDiametroMaximo.ValoresSelecionados != null && AneurismaDiametroMaximo.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-                    </RadzenTabsItem>
-                    <RadzenTabsItem Text="Morfologia">
-                        <RadzenDataGrid @ref="gridAneurismaMorfologia" AllowRowSelectOnRowClick="true" Data="@AneurismaMorfologia!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@AneurismaMorfologia.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(AneurismaMorfologia.ValoresSelecionados != null && AneurismaMorfologia.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-                    </RadzenTabsItem>
-                    <RadzenTabsItem Text="Outros">
-                        <RadzenDataGrid @ref="gridAneurismaOutros" AllowRowSelectOnRowClick="true" Data="@AneurismaOutros!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@AneurismaOutros.ValoresSelecionados>
-                            <Columns>
-                                <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                                <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
-                                    <Template Context="data">
-                                        <RadzenCheckBox TriState="false" Value="@(AneurismaOutros.ValoresSelecionados != null && AneurismaOutros.ValoresSelecionados.Contains(data))" TValue="bool" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
-        </RadzenStepsItem>
-        <RadzenStepsItem Text="Tratamentos">
-            <RadzenDataGrid @ref="gridTratamento" AllowRowSelectOnRowClick="true" Data="@Tratamento!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@Tratamento.ValoresSelecionados>
+            <RadzenDataGrid @ref="gridFatoresDeRisco" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@FatoresDeRisco!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@FatoresDeRisco.ValoresSelecionados>
                 <Columns>
-                    <RadzenDataGridColumn TItem="Valor" Property="Text" />
-                    <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right">
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(FatoresDeRisco.Titulo)
+                        </HeaderTemplate>
                         <Template Context="data">
-                            <RadzenCheckBox TriState="false" Value="@(Tratamento.ValoresSelecionados != null && Tratamento.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenCheckBox TriState="false" Value="@(FatoresDeRisco.ValoresSelecionados != null && FatoresDeRisco.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
                         </Template>
                     </RadzenDataGridColumn>
                 </Columns>
             </RadzenDataGrid>
+            <RadzenDataGrid @ref="gridSintomas" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@SintomasPaciente!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@SintomasPaciente.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(SintomasPaciente.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(SintomasPaciente.ValoresSelecionados != null && SintomasPaciente.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+            <RadzenDataGrid @ref="gridOutrosSintomas" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@OutrosSintomasPaciente!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@OutrosSintomasPaciente.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(OutrosSintomasPaciente.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(OutrosSintomasPaciente.ValoresSelecionados != null && OutrosSintomasPaciente.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+            <RadzenDataGrid @ref="gridExpectativaDeVida" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@ExpectativaDeVida!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@ExpectativaDeVida.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(ExpectativaDeVida.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(ExpectativaDeVida.ValoresSelecionados != null && ExpectativaDeVida.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+            <RadzenDataGrid @ref="gridComorbidades" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@Comorbidades!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@Comorbidades.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(Comorbidades.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(Comorbidades.ValoresSelecionados != null && Comorbidades.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenStepsItem>
+        <RadzenStepsItem Text="Aneurisma/Tratamento">
+
+            <RadzenDataGrid @ref="gridLocalAneurisma" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@AneurismaLocal!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@AneurismaLocal.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(AneurismaLocal.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(AneurismaLocal.ValoresSelecionados != null && AneurismaLocal.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+
+            <RadzenDataGrid @ref="gridAneurismaDiametroMaximo" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@AneurismaDiametroMaximo!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@AneurismaDiametroMaximo.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(AneurismaDiametroMaximo.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(AneurismaDiametroMaximo.ValoresSelecionados != null && AneurismaDiametroMaximo.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+            <RadzenDataGrid @ref="gridAneurismaMorfologia" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@AneurismaMorfologia!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@AneurismaMorfologia.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(AneurismaMorfologia.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(AneurismaMorfologia.ValoresSelecionados != null && AneurismaMorfologia.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+            <RadzenDataGrid @ref="gridAneurismaOutros" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@AneurismaOutros!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@AneurismaOutros.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(AneurismaOutros.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(AneurismaOutros.ValoresSelecionados != null && AneurismaOutros.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+
+            <RadzenDataGrid @ref="gridTratamento" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@Tratamento!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@Tratamento.ValoresSelecionados>
+                <Columns>
+                    <RadzenDataGridColumn TItem="Valor">
+                        <HeaderTemplate>
+                            @(Tratamento.Titulo)
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(Tratamento.ValoresSelecionados != null && Tratamento.ValoresSelecionados.Contains(data))" TValue="bool" />
+                            <RadzenLabel Text=@data.Text />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.NoWrap">
                 <RadzenButton Click=@(args => OnClick("")) Text="Calcular" Icon="fact_check" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Large" />
             </RadzenStack>
@@ -260,6 +271,24 @@
     RadzenDataGrid<Score>? gridUAIT;
     RadzenDataGrid<Score>? gridPHASES;
 
+
+    Valor? ExpectativaDeVidaSelecionado;
+    void HeaderFooterCellRender(DataGridCellRenderEventArgs<Score> args)
+    {
+        if (args.Column.Property == "ProductID")
+        {
+            args.Attributes.Add("colspan", 2);
+        }
+    }
+    void HeaderFooterCellRender(DataGridCellRenderEventArgs<Valor> args)
+    {
+        // if (args.Column.Property == "ProductID")
+        // {
+        //     args.Attributes.Add("colspan", 2);
+        // }
+        args.Attributes.Add("style", $"background-color: var(--rz-base-400);font-weight: bold;");
+        //args.Attributes.Add("style", $"background-color: red;");
+    }
     public record Sintomas(string Titulo)
     {
         public IEnumerable<Valor>? Valores;
@@ -452,8 +481,8 @@
     private async void OnClick(string text)
     {
         //NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Button Clicked", Detail = text });
-        await CalcularScores();
         ExibindoPaginaInicial = false;
+        await CalcularScores();
     }
     private async void OnResetClick()
     {
