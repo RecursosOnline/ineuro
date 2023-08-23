@@ -1,9 +1,9 @@
 ﻿@page "/"
 
 @inject NotificationService NotificationService
-<RadzenSteps ShowStepsButtons="false" Visible="@(ExibindoPaginaInicial)">
+<RadzenSteps ShowStepsButtons="false" @bind-SelectedIndex=@stepSelectedIndex @bind-Visible=@ExibindoPaginaInicial>
     <Steps>
-        <RadzenStepsItem Text="Paciente">
+        <RadzenStepsItem Text="Paciente" Selected="@(Step == CurrentStep.Paciente)">
             <RadzenRow Style="padding-bottom: 15px;">
                 <RadzenColumn>
                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Paciente</RadzenText>
@@ -79,9 +79,11 @@
                     </RadzenDataGridColumn>
                 </Columns>
             </RadzenDataGrid>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="padding-top: 15px;">
+                <RadzenButton Click=@(args => OnStepAneurismaClick()) Text="Avançar" Icon="queue_play_next" ButtonStyle="ButtonStyle.Light" />
+            </RadzenStack>
         </RadzenStepsItem>
-        <RadzenStepsItem Text="Aneurisma/Tratamento">
-
+        <RadzenStepsItem Text="Aneurisma/Tratamento" Selected="@(Step == CurrentStep.Aneurisma)">
             <RadzenDataGrid @ref="gridLocalAneurisma" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@AneurismaLocal!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@AneurismaLocal.ValoresSelecionados>
                 <Columns>
                     <RadzenDataGridColumn TItem="Valor">
@@ -160,7 +162,7 @@
         </RadzenStepsItem>
     </Steps>
 </RadzenSteps>
-<RadzenStack Visible="@(!ExibindoPaginaInicial)">
+<RadzenStack @bind-Visible=@ExibindoPaginaCalculo>
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
         <RadzenButton Variant="Variant.Text" Shade="Shade.Lighter" Click=@(args => OnResetClick()) Text="Editar" ButtonStyle="ButtonStyle.Primary" />
     </RadzenStack>
@@ -172,67 +174,124 @@
         <RadzenText TextStyle="TextStyle.Body1"><strong>Idade:</strong> </RadzenText>
         <RadzenText>@Idade</RadzenText>
     </RadzenStack>
-    <RadzenDataGrid @ref="gridFatoresDeRisco" Density="Density.Default" Data="@FatoresDeRisco!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(FatoresDeRisco.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(FatoresDeRisco.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridFatoresDeRisco" Density="Density.Default" Data="@FatoresDeRisco!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(FatoresDeRisco.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(FatoresDeRisco.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenDataGrid @ref="gridSintomas" Density="Density.Default" Data="@SintomasPaciente!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(SintomasPaciente.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(SintomasPaciente.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridSintomas" Density="Density.Default" Data="@SintomasPaciente!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(SintomasPaciente.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(SintomasPaciente.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenDataGrid @ref="gridOutrosSintomas" Density="Density.Default" Data="@OutrosSintomasPaciente!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(OutrosSintomasPaciente.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(OutrosSintomasPaciente.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridOutrosSintomas" Density="Density.Default" Data="@OutrosSintomasPaciente!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(OutrosSintomasPaciente.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(OutrosSintomasPaciente.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenDataGrid @ref="gridExpectativaDeVida" Density="Density.Default" Data="@ExpectativaDeVida!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(ExpectativaDeVida.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(ExpectativaDeVida.Titulo)</HeaderTemplate>
-
+    <RadzenDataGrid @ref="gridExpectativaDeVida" Density="Density.Default" Data="@ExpectativaDeVida!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(ExpectativaDeVida.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(ExpectativaDeVida.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenDataGrid @ref="gridComorbidades" Density="Density.Default" Data="@Comorbidades!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(Comorbidades.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(Comorbidades.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridComorbidades" Density="Density.Default" Data="@Comorbidades!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(Comorbidades.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(Comorbidades.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenDataGrid @ref="gridLocalAneurisma" Density="Density.Default" Data="@AneurismaLocal!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaLocal.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(AneurismaLocal.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridLocalAneurisma" Density="Density.Default" Data="@AneurismaLocal!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaLocal.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(AneurismaLocal.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenDataGrid @ref="gridAneurismaDiametroMaximo" Density="Density.Default" Data="@AneurismaDiametroMaximo!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaDiametroMaximo.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(AneurismaDiametroMaximo.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridAneurismaDiametroMaximo" Density="Density.Default" Data="@AneurismaDiametroMaximo!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaDiametroMaximo.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(AneurismaDiametroMaximo.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenDataGrid @ref="gridAneurismaMorfologia" Density="Density.Default" Data="@AneurismaMorfologia!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaMorfologia.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(AneurismaMorfologia.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridAneurismaMorfologia" Density="Density.Default" Data="@AneurismaMorfologia!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaMorfologia.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
-            <RadzenDataGridColumn TItem="Valor" TextAlign="TextAlign.Right" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(AneurismaMorfologia.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-
-    <RadzenDataGrid @ref="gridAneurismaOutros" Density="Density.Default" Data="@AneurismaOutros!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaOutros.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(AneurismaOutros.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridAneurismaOutros" Density="Density.Default" Data="@AneurismaOutros!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(AneurismaOutros.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(AneurismaOutros.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-    <RadzenDataGrid @ref="gridTratamento" Density="Density.Default" Data="@Tratamento!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(Tratamento.ValoresSelecionados!.Count > 0)">
-        <HeaderTemplate>@(Tratamento.Titulo)</HeaderTemplate>
+    <RadzenDataGrid @ref="gridTratamento" Density="Density.Default" Data="@Tratamento!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(Tratamento.ValoresSelecionados!.Any())">
         <Columns>
-            <RadzenDataGridColumn TItem="Valor" Property="Text" />
+            <RadzenDataGridColumn TItem="Valor">
+                <HeaderTemplate>
+                    @(Tratamento.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenLabel Text=@data.Text />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
 
@@ -251,6 +310,9 @@
         </Columns>
     </RadzenDataGrid>
 </RadzenStack>
+<RadzenStack>
+    <RadzenButton Text="OK" Click="@(args => OnResetClick())" />
+</RadzenStack>
 @code {
     int Idade;
     string? Paciente;
@@ -258,6 +320,7 @@
     public record Score(string Text, string Value);
 
     public bool ExibindoPaginaInicial = true;
+    public bool ExibindoPaginaCalculo = false;
     RadzenDataGrid<Valor>? gridFatoresDeRisco;
     RadzenDataGrid<Valor>? gridSintomas;
     RadzenDataGrid<Valor>? gridOutrosSintomas;
@@ -282,12 +345,7 @@
     }
     void HeaderFooterCellRender(DataGridCellRenderEventArgs<Valor> args)
     {
-        // if (args.Column.Property == "ProductID")
-        // {
-        //     args.Attributes.Add("colspan", 2);
-        // }
         args.Attributes.Add("style", $"background-color: var(--rz-base-400);font-weight: bold;");
-        //args.Attributes.Add("style", $"background-color: red;");
     }
     public record Sintomas(string Titulo)
     {
@@ -308,7 +366,14 @@
 
         }
     }
+    public enum CurrentStep
+    {
+        Paciente,
+        Aneurisma
 
+    }
+    int stepSelectedIndex = 0;
+    public CurrentStep Step { get; set; } = IAScoreExtended.CurrentStep.Paciente;
     public Sintomas? FatoresDeRisco { get; internal set; }
     public Sintomas? SintomasPaciente { get; internal set; }
     public Sintomas? OutrosSintomasPaciente { get; internal set; }
@@ -482,18 +547,62 @@
     {
         //NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Button Clicked", Detail = text });
         ExibindoPaginaInicial = false;
+        ExibindoPaginaCalculo = true;
         await CalcularScores();
     }
-    private async void OnResetClick()
+    private async void OnStepAneurismaClick()
     {
+        stepSelectedIndex = 1;
+        Step = CurrentStep.Aneurisma;
+        await Task.CompletedTask;
+    }
+    private  async void OnResetClick()
+    {
+        stepSelectedIndex = 0;
         ExibindoPaginaInicial = true;
+        ExibindoPaginaCalculo = false;
         await Task.CompletedTask;
     }
     private Task CalcularScores()
     {
-        var pontos_favor_reparacao = 0;
-        var pontos_gestao_conservadora = 0;
-        var recomendacao_UIATS = "Intervenção";
+        var FatoresDeRisco_score = FatoresDeRisco!.ValoresSelecionados!.Sum(x => x.Total);
+        var idade_score = Idade switch
+        {
+            >= 1 and < 40 => 4,
+            >= 40 and <= 60 => 3,
+            >= 61 and <= 70 => 4,
+            >= 71 and <= 80 => 4,
+            _ => 0
+        };
+        var risco_relacionado_idade_score = Idade switch
+        {
+            >= 1 and < 40 => 4,
+            >= 40 and <= 60 => 3,
+            >= 61 and <= 70 => 4,
+            >= 71 and <= 80 => 4,
+            _ => 0
+        };
+        var aneurisma_risco_relacionado_tamanho_score = Idade switch
+        {
+            _ => 0
+        };
+        var SintomasPaciente_score = SintomasPaciente!.ValoresSelecionados!.Sum(x => x.Total);
+        var OutrosSintomasPaciente_score = OutrosSintomasPaciente!.ValoresSelecionados!.Sum(x => x.Total);
+        var Comorbidades_score = Comorbidades!.ValoresSelecionados!.Sum(x => x.Total);
+        var ExpectativaDeVida_score = ExpectativaDeVida!.ValoresSelecionados!.Sum(x => x.Total);
+        var AneurismaLocal_score = AneurismaLocal!.ValoresSelecionados!.Sum(x => x.Total);
+        var AneurismaDiametroMaximo_score = AneurismaDiametroMaximo!.ValoresSelecionados!.Sum(x => x.Total);
+        var AneurismaMorfologia_score = AneurismaMorfologia!.ValoresSelecionados!.Sum(x => x.Total);
+        var AneurismaOutros_score = AneurismaOutros!.ValoresSelecionados!.Sum(x => x.Total);
+        var Tratamento_score = Tratamento!.ValoresSelecionados!.Sum(x => x.Total);
+
+        var pontos_favor_reparacao = idade_score + FatoresDeRisco_score + SintomasPaciente_score + OutrosSintomasPaciente_score
+        + AneurismaDiametroMaximo_score + AneurismaMorfologia_score + AneurismaLocal_score + AneurismaOutros_score;
+        var pontos_gestao_conservadora = ExpectativaDeVida_score + Comorbidades_score + risco_relacionado_idade_score
+        + aneurisma_risco_relacionado_tamanho_score + Tratamento_score + 5;
+
+        var recomendacao_UIATS = pontos_favor_reparacao > pontos_gestao_conservadora ? "Intervenção":"Administração";
+
         UIATS = new Scores("Escore não roto para tratamento de aneurisma intracraniano UIATS");//TODO: Verificar com a Maramelia uma tradução melhor
         var valores = new List<Score>();
         valores.Add(new Score(Text: "Número de pontos a favor da reparação", Value: pontos_favor_reparacao.ToString()));
@@ -501,10 +610,13 @@
         valores.Add(new Score(Text: "Recomendação UIATS", Value: recomendacao_UIATS));
         UIATS.Valores = valores;
 
+        var phases_risco_aneurisma = "ímplementar";
+        var phases_taxa_ruptura = "ímplementar calculo";
+
         PHASES = new Scores("PHASES");//TODO: Verificar com a Maramelia uma tradução melhor
         valores = new List<Score>();
-        valores.Add(new Score(Text: "Score PHASES para risco de aneurisma ", Value: pontos_favor_reparacao.ToString()));
-        valores.Add(new Score(Text: "Taxa de ruptura estimada em 5 anos de acordo com Score PHASES", Value: pontos_gestao_conservadora.ToString()));
+        valores.Add(new Score(Text: "Score PHASES para risco de aneurisma ", Value: phases_risco_aneurisma));
+        valores.Add(new Score(Text: "Taxa de ruptura estimada em 5 anos de acordo com Score PHASES", Value: phases_taxa_ruptura));
         PHASES.Valores = valores;
 
         return Task.CompletedTask;
