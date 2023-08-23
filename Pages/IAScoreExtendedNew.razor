@@ -1,19 +1,10 @@
-﻿@page "/old"
+﻿@page "/comtabs"
 
 @inject NotificationService NotificationService
-<RadzenSteps ShowStepsButtons="false">
-    <Steps>
-        <RadzenStepsItem>
-            1
-        </RadzenStepsItem>
-        <RadzenStepsItem>
-            2
-        </RadzenStepsItem>
-    </Steps>
-</RadzenSteps>
-<RadzenSteps ShowStepsButtons="false" @bind-SelectedIndex=@stepSelectedIndex @bind-Visible=@ExibindoPaginaInicial>
-    <Steps>
-        <RadzenStepsItem Text="Paciente" Selected="@(Step == CurrentStep.Paciente)">
+
+<RadzenTabs RenderMode="TabRenderMode.Client">
+    <Tabs>
+        <RadzenTabsItem Text="Paciente" Selected="@(Step == CurrentStep.Paciente)">
             <RadzenRow Style="padding-bottom: 15px;">
                 <RadzenColumn>
                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Paciente</RadzenText>
@@ -92,8 +83,8 @@
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="padding-top: 15px;">
                 <RadzenButton Click=@(args => OnStepAneurismaClick()) Text="Avançar" Icon="queue_play_next" ButtonStyle="ButtonStyle.Light" />
             </RadzenStack>
-        </RadzenStepsItem>
-        <RadzenStepsItem Text="Aneurisma/Tratamento" Selected="@(Step == CurrentStep.Aneurisma)">
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Aneurisma/Tratamento" Selected="@(Step == CurrentStep.Aneurisma)">
             <RadzenDataGrid @ref="gridLocalAneurisma" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@AneurismaLocal!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@AneurismaLocal.ValoresSelecionados>
                 <Columns>
                     <RadzenDataGridColumn TItem="Valor">
@@ -169,9 +160,9 @@
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.NoWrap">
                 <RadzenButton Click=@(args => OnClick("")) Text="Calcular" Icon="fact_check" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Large" />
             </RadzenStack>
-        </RadzenStepsItem>
-    </Steps>
-</RadzenSteps>
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
 <RadzenStack @bind-Visible=@ExibindoPaginaCalculo>
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
         <RadzenButton Variant="Variant.Text" Shade="Shade.Lighter" Click=@(args => OnResetClick()) Text="Editar" ButtonStyle="ButtonStyle.Primary" />
@@ -383,7 +374,7 @@
 
     }
     int stepSelectedIndex = 0;
-    public CurrentStep Step { get; set; } = IAScoreExtended.CurrentStep.Paciente;
+    public CurrentStep Step { get; set; } = IAScoreExtendedNew.CurrentStep.Paciente;
     public Sintomas? FatoresDeRisco { get; internal set; }
     public Sintomas? SintomasPaciente { get; internal set; }
     public Sintomas? OutrosSintomasPaciente { get; internal set; }
@@ -566,7 +557,7 @@
         Step = CurrentStep.Aneurisma;
         await Task.CompletedTask;
     }
-    private  async void OnResetClick()
+    private async void OnResetClick()
     {
         stepSelectedIndex = 0;
         ExibindoPaginaInicial = true;
@@ -611,7 +602,7 @@
         var pontos_gestao_conservadora = ExpectativaDeVida_score + Comorbidades_score + risco_relacionado_idade_score
         + aneurisma_risco_relacionado_tamanho_score + Tratamento_score + 5;
 
-        var recomendacao_UIATS = pontos_favor_reparacao > pontos_gestao_conservadora ? "Intervenção":"Administração";
+        var recomendacao_UIATS = pontos_favor_reparacao > pontos_gestao_conservadora ? "Intervenção" : "Administração";
 
         UIATS = new Scores("Escore não roto para tratamento de aneurisma intracraniano UIATS");//TODO: Verificar com a Maramelia uma tradução melhor
         var valores = new List<Score>();
