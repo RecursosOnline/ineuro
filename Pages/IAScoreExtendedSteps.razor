@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/comstep"
 
 @inject NotificationService NotificationService
 <RadzenSteps ShowStepsButtons="false" @bind-SelectedIndex=@stepSelectedIndex @bind-Visible=@ExibindoPaginaInicial>
@@ -11,7 +11,7 @@
                 </RadzenColumn>
                 <RadzenColumn Size="3">
                     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Idade</RadzenText>
-                    <RadzenNumeric Min=0 Placeholder="Idade" @bind-Value=@Idade />
+                    <RadzenNumeric Min=0 Placeholder="Idade" @bind-Value=@Idade ShowUpDown="false" />
                 </RadzenColumn>
             </RadzenRow>
             <RadzenDataGrid @ref="gridFatoresDeRisco" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@FatoresDeRisco!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@FatoresDeRisco.ValoresSelecionados>
@@ -157,7 +157,7 @@
             </RadzenDataGrid>
 
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.NoWrap">
-                <RadzenButton Click=@(args => OnClick("")) Text="Calcular" Icon="fact_check" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Large" />
+                <RadzenButton Click=@(args => OnResetClick()) Text="Calcular" Icon="fact_check" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Large" />
             </RadzenStack>
         </RadzenStepsItem>
         <RadzenStepsItem Text="Calculo">
@@ -317,7 +317,7 @@
     <RadzenButton Text="OK" Click="@(args => OnResetClick())" />
 </RadzenStack>
 @code {
-    int Idade;
+    int? Idade;
     string? Paciente;
     public record Valor(Guid Id, string Text, int Total);
     public record Score(string Text, string Value);

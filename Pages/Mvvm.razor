@@ -1,0 +1,23 @@
+﻿@page "/mvvm"
+@using CommunityToolkit.Mvvm.Messaging;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+
+
+<h3>@currentCount</h3>
+<button onclick="IncrementCount()">OK</button>
+
+<RadzenButton Text="OK" Click="@(args => IncrementCount())" />
+@code {
+    int currentCount = 0;
+    private async Task IncrementCount()
+    {
+        await protectedLocalStorage.SetAsync("count", ++currentCount);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var result = await protectedLocalStorage.GetAsync<int>("count");
+        currentCount = result.Value;
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

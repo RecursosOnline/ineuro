@@ -1,18 +1,22 @@
-﻿@page "/comtabs"
-
+﻿@page "/"
+@using QuestPDF.Fluent;
+@using QuestPDF.Helpers;
+@using QuestPDF.Infrastructure;
+@using QuestPDF.Previewer;
+@using ineuro.Extensions;
 @inject NotificationService NotificationService
 
-<RadzenTabs RenderMode="TabRenderMode.Client">
+<RadzenTabs RenderMode="TabRenderMode.Client" Visible="@ExibindoPaginaInicial">
     <Tabs>
         <RadzenTabsItem Text="Paciente" Selected="@(Step == CurrentStep.Paciente)">
             <RadzenRow Style="padding-bottom: 15px;">
                 <RadzenColumn>
-                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Paciente</RadzenText>
+                    <RadzenText TextStyle="Radzen.Blazor.TextStyle.Subtitle2" TagName="TagName.H3">Paciente</RadzenText>
                     <RadzenTextBox Placeholder="Paciente..." class="w-100" @bind-Value=@Paciente />
                 </RadzenColumn>
                 <RadzenColumn Size="3">
-                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Idade</RadzenText>
-                    <RadzenNumeric Min=0 Placeholder="Idade" @bind-Value=@Idade />
+                    <RadzenText TextStyle="Radzen.Blazor.TextStyle.Subtitle2" TagName="TagName.H3">Idade</RadzenText>
+                    <RadzenNumeric Min=0 Max=120 Placeholder="Idade" @bind-Value=@Idade />
                 </RadzenColumn>
             </RadzenRow>
             <RadzenDataGrid @ref="gridFatoresDeRisco" HeaderCellRender="@HeaderFooterCellRender" AllowRowSelectOnRowClick="true" Data="@FatoresDeRisco!.Valores" TItem="Valor" SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@FatoresDeRisco.ValoresSelecionados>
@@ -157,22 +161,23 @@
                 </Columns>
             </RadzenDataGrid>
 
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.NoWrap">
-                <RadzenButton Click=@(args => OnClick("")) Text="Calcular" Icon="fact_check" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Large" />
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="padding-top: 15px;">
+                <RadzenButton Click=@(args => OnCalcularClick()) Text="Calcular" Icon="calculate" ButtonStyle="ButtonStyle.Light" />
             </RadzenStack>
         </RadzenTabsItem>
     </Tabs>
 </RadzenTabs>
-<RadzenStack @bind-Visible=@ExibindoPaginaCalculo>
-    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
-        <RadzenButton Variant="Variant.Text" Shade="Shade.Lighter" Click=@(args => OnResetClick()) Text="Editar" ButtonStyle="ButtonStyle.Primary" />
-    </RadzenStack>
+<RadzenStack Visible="@ExibindoPaginaCalculo">
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="padding-top: 15px;">
+        <RadzenButton Click=@(args => OnResetClick()) Text="Editar" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />
+        <RadzenButton Click=@(args => OnViewPDFClick()) Text="Visualizar PDF" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />
+    </RadzenStack>    
     <RadzenStack Orientation="Orientation.Horizontal">
-        <RadzenText TextStyle="TextStyle.Body1"><strong>Paciente:</strong> </RadzenText>
+        <RadzenText TextStyle="Radzen.Blazor.TextStyle.Body1"><strong>Paciente:</strong> </RadzenText>
         <RadzenText>@Paciente</RadzenText>
     </RadzenStack>
     <RadzenStack Orientation="Orientation.Horizontal">
-        <RadzenText TextStyle="TextStyle.Body1"><strong>Idade:</strong> </RadzenText>
+        <RadzenText TextStyle="Radzen.Blazor.TextStyle.Body1"><strong>Idade:</strong> </RadzenText>
         <RadzenText>@Idade</RadzenText>
     </RadzenStack>
     <RadzenDataGrid @ref="gridFatoresDeRisco" Density="Density.Default" Data="@FatoresDeRisco!.ValoresSelecionados" TItem="Valor" GridLines="DataGridGridLines.None" Visible="@(FatoresDeRisco.ValoresSelecionados!.Any())">
@@ -297,31 +302,66 @@
     </RadzenDataGrid>
 
     <RadzenDataGrid @ref="gridUAIT" Data="@UIATS!.Valores" TItem="Score" GridLines="DataGridGridLines.Horizontal">
-        <HeaderTemplate>@(UIATS.Titulo)</HeaderTemplate>
         <Columns>
-            <RadzenDataGridColumn TItem="Score" Property="Text" />
-            <RadzenDataGridColumn TItem="Score" Property="Value" TextAlign="TextAlign.Left" />
+            <RadzenDataGridColumn TItem="Score">
+                <HeaderTemplate>
+                    @(UIATS.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenRow Gap="1rem">
+                        <RadzenColumn>
+                            <RadzenLabel Text=@data.Text />
+                        </RadzenColumn>
+                        <RadzenColumn>
+                            <RadzenLabel Text=@data.Value />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
     <RadzenDataGrid @ref="gridPHASES" Data="@PHASES!.Valores" TItem="Score" GridLines="DataGridGridLines.Horizontal">
-        <HeaderTemplate>@(PHASES.Titulo)</HeaderTemplate>
         <Columns>
-            <RadzenDataGridColumn TItem="Score" Property="Text" />
-            <RadzenDataGridColumn TItem="Score" Property="Value" TextAlign="TextAlign.Left" />
+            <RadzenDataGridColumn TItem="Score">
+                <HeaderTemplate>
+                    @(PHASES.Titulo)
+                </HeaderTemplate>
+                <Template Context="data">
+                    <RadzenRow Gap="1rem">
+                        <RadzenColumn>
+                            <RadzenLabel Text=@data.Text />
+                        </RadzenColumn>
+                        <RadzenColumn>
+                            <RadzenLabel Text=@data.Value />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="padding-top: 15px;padding-bottom: 15px;">
+        <RadzenButton Click=@(args => OnResetClick()) Text="Editar" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />
+        <RadzenButton Click=@(args => OnViewPDFClick()) Text="Visualizar PDF" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />
+    </RadzenStack>
 </RadzenStack>
-<RadzenStack>
-    <RadzenButton Text="OK" Click="@(args => OnResetClick())" />
+<RadzenStack Visible="@ExibindoPDF">
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="padding-top: 15px;">
+        <RadzenButton Click=@(args => OnResetClick()) Text="Editar" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />        
+    </RadzenStack>
+    <RadzenStack>
+        <iframe src="/pdf/@ArquivoPdf" style="width:100%;height:1200px;"></iframe>
+    </RadzenStack>
 </RadzenStack>
 @code {
-    int Idade;
+    int? Idade;
     string? Paciente;
+    string? ArquivoPdf;
     public record Valor(Guid Id, string Text, int Total);
     public record Score(string Text, string Value);
 
     public bool ExibindoPaginaInicial = true;
     public bool ExibindoPaginaCalculo = false;
+    public bool ExibindoPDF = false;
     RadzenDataGrid<Valor>? gridFatoresDeRisco;
     RadzenDataGrid<Valor>? gridSintomas;
     RadzenDataGrid<Valor>? gridOutrosSintomas;
@@ -370,7 +410,8 @@
     public enum CurrentStep
     {
         Paciente,
-        Aneurisma
+        Aneurisma,
+        ViewPDF
 
     }
     int stepSelectedIndex = 0;
@@ -557,13 +598,38 @@
         Step = CurrentStep.Aneurisma;
         await Task.CompletedTask;
     }
+    private async void OnCalcularClick()
+    {
+        stepSelectedIndex = 0;
+        ExibindoPaginaInicial = false;
+        ExibindoPaginaCalculo = true;
+        Step = CurrentStep.Paciente;
+        await CalcularScores();
+        // await Task.CompletedTask;
+    }
     private async void OnResetClick()
     {
         stepSelectedIndex = 0;
+        Step = CurrentStep.Paciente;
         ExibindoPaginaInicial = true;
         ExibindoPaginaCalculo = false;
+        ExibindoPDF = false;
         await Task.CompletedTask;
     }
+    private async void OnViewPDFClick()
+    {       
+        var listaSintomas = new List<Sintomas> { FatoresDeRisco!, SintomasPaciente!, OutrosSintomasPaciente!, Comorbidades!, ExpectativaDeVida!, AneurismaLocal!, AneurismaDiametroMaximo!, AneurismaMorfologia!, AneurismaOutros!, Tratamento! };
+        var listaScores = new List<Scores> { UIATS!, PHASES! };
+        var calculoDocument = new CalculoDocument(listaSintomas, listaScores);
+        ArquivoPdf = $"{DateTime.Now.Ticks}.pdf";
+        calculoDocument.GeneratePdf($"wwwroot\\pdf\\{ArquivoPdf}");
+        Step = CurrentStep.ViewPDF;
+        ExibindoPaginaInicial = false;
+        ExibindoPaginaCalculo = false;
+        ExibindoPDF = true;
+        await Task.CompletedTask;
+    }
+
     private Task CalcularScores()
     {
         var FatoresDeRisco_score = FatoresDeRisco!.ValoresSelecionados!.Sum(x => x.Total);
@@ -622,4 +688,143 @@
 
         return Task.CompletedTask;
     }
+    internal class CalculoDocument : IDocument
+    {
+        public List<Sintomas> Sintomas { get; }
+        public List<Scores> Scores { get; }
+        public CalculoDocument(List<Sintomas> sintomas, List<Scores> scores)
+        {
+            Sintomas = sintomas;
+            Scores = scores;
+        }
+        public void Compose(IDocumentContainer container)
+        {
+            container
+                .Page(page =>
+                {
+                    page.Margin(50);
+
+                    page.Header().Element(ComposeHeader);
+                    page.Content().Element(ComposeContent);
+
+                    page.Content().Component(new SintomasAggregateCompent(Sintomas, Scores));
+                    page.Footer().AlignCenter().Text(x =>
+                    {
+                        x.Line("Dra. Maramelia");
+                        x.CurrentPageNumber();
+                        x.Span(" / ");
+                        x.TotalPages();
+                    });
+                });
+        }
+        void ComposeHeader(IContainer container)
+        {
+            var titleStyle = QuestPDF.Infrastructure.TextStyle.Default.FontSize(16).SemiBold().FontColor(Colors.Black);
+
+            container.Row(row =>
+            {
+                row.RelativeItem().Column(column =>
+                {
+                    column.Item().Text($"iNeuro Score - Valores Calculados").Style(titleStyle);
+
+                    column.Item().Text(text =>
+                    {
+                        text.Span("Data: ").SemiBold();
+                        text.Span($"{DateTime.Now:d}");
+                    });
+                });
+
+            });
+        }
+        void ComposeContent(IContainer container)
+        {
+            container
+                .PaddingVertical(40)
+                .Height(250)
+                .Background(Colors.Grey.Lighten3)
+                .AlignCenter()
+                .AlignMiddle()
+                .Text("Content").FontSize(16);
+        }
+        class SintomasAggregateCompent : QuestPDF.Infrastructure.IComponent
+        {
+            public SintomasAggregateCompent(List<Sintomas> sintomas, List<Scores> scores)
+            {
+                Sintomas = sintomas;
+                Scores = scores;
+            }
+            public List<Sintomas> Sintomas { get; }
+            public List<Scores> Scores { get; }
+
+            public void Compose(IContainer container)
+            {
+                container.Column(column =>
+                {
+                    foreach (var sintoma in Sintomas)
+                    {
+                        column.Item().Component(new SintomaComponent(sintoma));
+                    }
+                    foreach (var score in Scores)
+                    {
+                        column.Item().Component(new ScoreComponent(score));
+                    }
+                });
+
+            }
+        }
+        class SintomaComponent : QuestPDF.Infrastructure.IComponent
+        {
+            public SintomaComponent(Sintomas sintomas)
+            {
+                Sintomas = sintomas;
+            }
+
+            public Sintomas Sintomas { get; }
+
+            public void Compose(IContainer container)
+            {
+                container.Column(column =>
+                {
+                    column.Spacing(2);
+
+                    column.Item().BorderBottom(0.5f, Unit.Point).PaddingBottom(5).PaddingTop(5).Text(Sintomas.Titulo).SemiBold();
+
+                    column.Item().Text(string.Join(" - ", Sintomas.ValoresSelecionados!.Select(x => x.Text).ToArray()));
+                });
+            }
+        }
+        class ScoreComponent : QuestPDF.Infrastructure.IComponent
+        {
+            public ScoreComponent(Scores score)
+            {
+                Score = score;
+            }
+
+            public Scores Score { get; }
+
+            public void Compose(IContainer container)
+            {
+                container.Table(table =>
+                {
+                    table.Header(header => { header.Cell().PaddingTop(5); });
+                    table.ColumnsDefinition(columns =>
+                    {
+                        columns.RelativeColumn(1);
+                        columns.ConstantColumn(100);
+                    });
+                    table.Cell().ColumnSpan(2).LabelCell(Score.Titulo);
+
+                    foreach (var item in Score.Valores!)
+                    {
+                        table.Cell().ValueCell(item.Text);
+                        table.Cell().ValueCell(item.Value);
+                        table.Cell().ColumnSpan(2).LineHorizontal(0.5f, Unit.Point);
+                    }
+
+                });
+            }
+        }
+
+    }
+
 }
