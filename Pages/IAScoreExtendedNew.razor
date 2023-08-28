@@ -170,7 +170,7 @@
 <RadzenStack Visible="@ExibindoPaginaCalculo">
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="padding-top: 15px;">
         <RadzenButton Click=@(args => OnResetClick()) Text="Editar" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />
-        <RadzenButton Click=@(args => OnViewPDFClick()) Text="Visualizar PDF" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />
+        <RadzenButton Click=@(args => OnViewPDFClick()) Text="Visualizar PDF" Icon="picture_as_pdf" ButtonStyle="ButtonStyle.Light" />
     </RadzenStack>    
     <RadzenStack Orientation="Orientation.Horizontal">
         <RadzenText TextStyle="Radzen.Blazor.TextStyle.Body1"><strong>Paciente:</strong> </RadzenText>
@@ -341,7 +341,7 @@
     </RadzenDataGrid>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Style="padding-top: 15px;padding-bottom: 15px;">
         <RadzenButton Click=@(args => OnResetClick()) Text="Editar" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />
-        <RadzenButton Click=@(args => OnViewPDFClick()) Text="Visualizar PDF" Icon="manage_history" ButtonStyle="ButtonStyle.Light" />
+        <RadzenButton Click=@(args => OnViewPDFClick()) Text="Visualizar PDF" Icon="picture_as_pdf" ButtonStyle="ButtonStyle.Light" />
     </RadzenStack>
 </RadzenStack>
 <RadzenStack Visible="@ExibindoPDF">
